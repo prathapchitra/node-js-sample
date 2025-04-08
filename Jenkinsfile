@@ -4,8 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'cprathap/node-js-sample:latest'
         K8S_DEPLOYMENT = 'node-app'
-        K8S_NAMESPACE = 'default'
-        KUBECONFIG = "${HOME}/.kube/config"
+        K8S_NAMESPACE = 'default'  // Change if needed
     }
 
     stages {
@@ -36,12 +35,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Make sure the config file exists
-                    sh 'echo "Using kubeconfig at $KUBECONFIG" && ls -l $KUBECONFIG'
-
-                    // Deploy with --validate=false if needed
-                    sh "kubectl apply -f k8s-manifests/deployment.yaml --validate=false"
-                    sh "kubectl apply -f k8s-manifests/service.yaml --validate=false"
+                    sh "kubectl apply -f k8s-manifests/deployment.yaml"
+                    sh "kubectl apply -f k8s-manifests/service.yaml"
                 }
             }
         }
