@@ -16,4 +16,4 @@ spec:
         - name: nodejs-app
           image: cprathap/node-js-sample:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 5000
