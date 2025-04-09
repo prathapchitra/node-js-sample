@@ -3,11 +3,11 @@ kind: Service
 metadata:
   name: node-app-service
   labels:
-    app: node-app
+    app: nodejs-app
 spec:
   type: NodePort
   selector:
-    app: node-app
+    app: nodejs-app
   ports:
     - protocol: TCP
       port: 80
