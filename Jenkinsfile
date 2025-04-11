@@ -2,9 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'cprathap/node-js-sample:latest'
+        IMAGE_NAME = 'cprathap/node-js-sample'
+        VERSION = "v1.0.${BUILD_NUMBER}"
+        DOCKER_IMAGE = "${IMAGE_NAME}:${VERSION}"
+        LATEST_IMAGE = "${IMAGE_NAME}:latest"
         K8S_DEPLOYMENT = 'node-app'
-        K8S_NAMESPACE = 'default'  // Change if needed
+        K8S_NAMESPACE = 'default'
     }
 
     stages {
@@ -17,7 +20,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    sh "docker build -t ${DOCKER_IMAGE} -t ${LATEST_IMAGE} ."
                 }
             }
         }
@@ -27,6 +30,7 @@ pipeline {
                 script {
                     withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
                         sh "docker push ${DOCKER_IMAGE}"
+                        sh "docker push ${LATEST_IMAGE}"
                     }
                 }
             }
@@ -35,6 +39,10 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
+                    // Replace the image in deployment.yaml with the versioned tag
+                    sh "sed -i 's|image: .*|image: ${DOCKER_IMAGE}|' k8s-manifests/deployment.yaml"
+
+                    // Apply Kubernetes manifests
                     sh "kubectl apply -f k8s-manifests/deployment.yaml"
                     sh "kubectl apply -f k8s-manifests/service.yaml"
                 }
@@ -43,9 +51,7 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                script {
-                    sh "kubectl get pods -n ${K8S_NAMESPACE}"
-                }
+                sh "kubectl get pods -n ${K8S_NAMESPACE}"
             }
         }
     }
