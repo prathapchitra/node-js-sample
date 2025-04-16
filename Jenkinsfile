@@ -8,6 +8,7 @@ pipeline {
         LATEST_IMAGE = "${IMAGE_NAME}:latest"
         K8S_DEPLOYMENT = 'node-app'
         K8S_NAMESPACE = 'default'
+        RECIPIENTS = 'youremail@example.com' // Add your recipient email(s)
     }
 
     stages {
@@ -53,6 +54,19 @@ pipeline {
             steps {
                 sh "kubectl get pods -n ${K8S_NAMESPACE}"
             }
+        }
+    }
+
+    post {
+        success {
+            mail to: "${RECIPIENTS}",
+                 subject: "Build Successful: ${currentBuild.fullDisplayName}",
+                 body: "The build ${currentBuild.fullDisplayName} was successful!\nCheck the build at: ${BUILD_URL}"
+        }
+        failure {
+            mail to: "${RECIPIENTS}",
+                 subject: "Build Failed: ${currentBuild.fullDisplayName}",
+                 body: "The build ${currentBuild.fullDisplayName} failed.\nCheck the build at: ${BUILD_URL}\nConsole Output: ${BUILD_URL}console"
         }
     }
 }
