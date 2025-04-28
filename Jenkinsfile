@@ -8,7 +8,6 @@ pipeline {
         LATEST_IMAGE = "${IMAGE_NAME}:latest"
         K8S_DEPLOYMENT = 'node-app'
         K8S_NAMESPACE = 'default'
-        RECIPIENTS = 'youremail@example.com' // Replace with your actual email if needed
     }
 
     stages {
