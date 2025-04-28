@@ -57,16 +57,3 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            mail to: "${RECIPIENTS}",
-                 subject: "Build Successful: ${currentBuild.fullDisplayName}",
-                 body: "The build ${currentBuild.fullDisplayName} was successful!\nCheck the build at: ${BUILD_URL}"
-        }
-        failure {
-            mail to: "${RECIPIENTS}",
-                 subject: "Build Failed: ${currentBuild.fullDisplayName}",
-                 body: "The build ${currentBuild.fullDisplayName} failed.\nCheck the build at: ${BUILD_URL}\nConsole Output: ${BUILD_URL}console"
-        }
-    }
-}
